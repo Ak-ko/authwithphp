@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/login.html">Login</a>
+      <a href="/register.html">Register</a>
+    </nav>
+
+    <h1>Login</h1>
+    <form id="login-form">
+      <div>
+        <input type="email" name="email" placeholder="Email" />
+      </div>
+      <div>
+        <input type="password" name="password" placeholder="Password" />
+      </div>
+      <div>
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+
+    <button class="getUserBtn">Get User</button>
+
+    <button onclick="logout()">Logout</button>
+
+    <script>
+      const form = document.querySelector("#login-form");
+      const getUserBtn = document.querySelector(".getUserBtn");
+
+      getUserBtn.addEventListener("click", getUser);
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const data = new FormData(form);
+        await sendLoginRequest(data);
+      });
+
+      async function sendLoginRequest(data) {
+        fetch("http://localhost:8000/login", {
+          method: "POST",
+          body: data,
+          credentials: "include",
+        })
+          .then((promise) => promise.json())
+          .then((res) => {
+            console.log(res);
+            form.reset();
+          })
+          .catch((e) => console.log(e));
+      }
+
+      function getUser() {
+        fetch("http://localhost:8000", {
+          method: "GET",
+          credentials: "include",
+        })
+          .then((promise) => promise.json())
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((e) => console.log(e));
+      }
+
+      function logout() {
+        fetch("http://localhost:8000/logout", {
+          method: "POST",
+          credentials: "include",
+        })
+          .then((promise) => promise.json())
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((e) => console.log(e));
+      }
+    </script>
+  </body>
+</html>
