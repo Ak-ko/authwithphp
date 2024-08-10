@@ -8,42 +8,34 @@ class Auth
         $email = $_POST["email"] ?? null;
         $password = $_POST["password"] ?? null;
         if (!$email) {
-            http_response_code(400);
-            echo json_encode([
+            Response::badRequest([
                 "error" => [
                     "message" => "Email is required"
                 ]
             ]);
-            exit();
         }
         if (!$password) {
-            http_response_code(400);
-            echo json_encode([
+            Response::badRequest([
                 "error" => [
                     "message" => "Password is required"
                 ]
             ]);
-            exit();
         }
         $user = null;
         if ($email !== "ak@demo.com") {
-            http_response_code(400);
-            echo json_encode([
+            Response::badRequest([
                 "error" => [
                     "message" => "User not found"
                 ]
             ]);
-            exit();
         }
         $user = ["email" => "ak@demo.com", "password" => "password"];
         if (!$password == $user["password"]) {
-            http_response_code(400);
-            echo json_encode([
+            Response::badRequest([
                 "error" => [
                     "message" => "Password not match"
                 ]
             ]);
-            exit();
         }
 
         $jwt = new JWT([
@@ -57,11 +49,9 @@ class Auth
             path: '/',
             domain: "localhost"
         );
-        http_response_code(200);
-        echo json_encode([
+        Response::success([
             "message" => "Login Successfully"
         ]);
-        exit();
     }
 
     public function register()
@@ -69,42 +59,34 @@ class Auth
         $email = $_POST["email"] ?? null;
         $password = $_POST["password"] ?? null;
         if (!$email) {
-            http_response_code(400);
-            echo json_encode([
+            Response::badRequest([
                 "error" => [
                     "message" => "Email is required"
                 ]
             ]);
-            exit();
         }
         if (!$password) {
-            http_response_code(400);
-            echo json_encode([
+            Response::badRequest([
                 "error" => [
                     "message" => "Password is required"
                 ]
             ]);
-            exit();
         }
         $user = null;
         if ($email === "existed@demo.com") {
-            http_response_code(400);
-            echo json_encode([
+            Response::badRequest([
                 "error" => [
                     "message" => "Email already existed"
                 ]
             ]);
-            exit();
         }
         $stored = $this->store(["email" => $email, "password" => $password]);
         if (!$stored) {
-            http_response_code(500);
-            echo json_encode([
+            Response::internalServerError([
                 "error" => [
                     "message" => "Something Went Wrong!"
                 ]
             ]);
-            exit();
         }
         $jwt = new JWT([
             "email" => $user["email"]
@@ -117,21 +99,17 @@ class Auth
             path: '/',
             domain: "localhost"
         );
-        http_response_code(200);
-        echo json_encode([
+        Response::success([
             "message" => "Login Successfully"
         ]);
-        exit();
     }
 
     public function logout()
     {
         if (is_null($_COOKIE["jwt"])) {
-            http_response_code(400);
-            echo json_encode([
+            Response::badRequest([
                 "message" => "Unauthorized"
             ]);
-            exit();
         }
 
         setcookie(
@@ -139,11 +117,9 @@ class Auth
             value: "",
             expires_or_options: time() - 1
         );
-        http_response_code(200);
-        echo json_encode([
+        Response::success([
             "message" => "success"
         ]);
-        exit();
     }
 
     protected function store($userData)
@@ -160,30 +136,22 @@ class Auth
     {
         $jwttoken = $_COOKIE["jwt"] ?? null;
         if (is_null($jwttoken)) {
-            http_response_code(400);
-            echo json_encode([
+            Response::badRequest([
                 "error" => [
                     "message" => "No Token"
                 ]
             ]);
-            exit();
         }
         $jwt = new JWT();
         $verify = $jwt->verifyToken($jwttoken);
         if (!$verify) {
-            http_response_code(400);
-            echo json_encode([
+            Response::badRequest([
                 "error" => [
                     "message" => "Token expired"
                 ]
             ]);
-            exit();
         }
         $user = $jwt->decodeToken($jwttoken);
-        http_response_code(200);
-        echo json_encode([
-            "user" => $user ?? null
-        ]);
-        exit();
+        Response::success(["user" => $user]);
     }
 }
