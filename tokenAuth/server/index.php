@@ -12,7 +12,7 @@ switch ($uri) {
     case "/":
         if ($method == "GET") {
             $jwttoken = $_COOKIE["jwt"];
-            $jwt = new JWT(null);
+            $jwt = new JWT();
             $verify = $jwt->verifyToken($jwttoken);
             if (!$verify) {
                 exit();

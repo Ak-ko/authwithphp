@@ -11,7 +11,7 @@ class JWT
     protected $secret;
     protected $expirationTime;
 
-    public function __construct($payload)
+    public function __construct($payload = null)
     {
         $this
             ->setHeader()
