@@ -155,4 +155,35 @@ class Auth
         }
         return false;
     }
+
+    public function getUser()
+    {
+        $jwttoken = $_COOKIE["jwt"] ?? null;
+        if (is_null($jwttoken)) {
+            http_response_code(400);
+            echo json_encode([
+                "error" => [
+                    "message" => "No Token"
+                ]
+            ]);
+            exit();
+        }
+        $jwt = new JWT();
+        $verify = $jwt->verifyToken($jwttoken);
+        if (!$verify) {
+            http_response_code(400);
+            echo json_encode([
+                "error" => [
+                    "message" => "Token expired"
+                ]
+            ]);
+            exit();
+        }
+        $user = $jwt->decodeToken($jwttoken);
+        http_response_code(200);
+        echo json_encode([
+            "user" => $user ?? null
+        ]);
+        exit();
+    }
 }
